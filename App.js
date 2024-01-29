@@ -5,10 +5,10 @@ import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Button from "./components/Button";
-import CanvaDesign from "./components/CanvaDesign";
 import CircleButton from "./components/CircleButton";
 import IconButton from "./components/IconButton";
 import ImageViewer from "./components/ImageViewer";
+import { PolygonShapeDraw } from "./components/PolygonShapeDraw";
 
 const PlaceholderImage = require("./assets/images/background-image.png");
 
@@ -19,7 +19,7 @@ export default function App() {
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
 
@@ -36,8 +36,8 @@ export default function App() {
     setIsCanvaVisible(false);
   };
 
-  const onAddSticker = () => {
-    setIsCanvaVisible(true);
+  const onStartEditing = () => {
+    setIsCanvaVisible(!isCanvaVisible);
   };
 
   const onSaveImageAsync = async () => {
@@ -51,13 +51,13 @@ export default function App() {
           placeholderImageSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
-        {isCanvaVisible && <CanvaDesign />}
+        {isCanvaVisible && <PolygonShapeDraw />}
       </View>
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
             <IconButton icon="refresh" label="Reset" onPress={onReset} />
-            <CircleButton onPress={onAddSticker} />
+            <CircleButton onPress={onStartEditing} isEditing={isCanvaVisible} />
             <IconButton
               icon="save-alt"
               label="Save"
@@ -91,12 +91,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,
-  },
-  image: {
-    width: 320,
-    height: 440,
-    borderRadius: 18,
   },
   footerContainer: {
     flex: 1 / 3,
