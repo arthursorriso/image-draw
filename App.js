@@ -6,6 +6,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Button from "./components/Button";
 import CircleButton from "./components/CircleButton";
+import { FloatingMenu } from "./components/FloatingMenu";
+import FloatingMenuButton from "./components/FloatingMenuButton";
 import IconButton from "./components/IconButton";
 import ImageViewer from "./components/ImageViewer";
 import { PolygonShapeDraw } from "./components/PolygonShapeDraw";
@@ -16,6 +18,8 @@ export default function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showAppOptions, setShowAppOptions] = useState(false);
   const [isCanvaVisible, setIsCanvaVisible] = useState(false);
+  const [isAddButtonActive, setIsAddButtonActive] = useState(false);
+  const [isDeleteButtonActive, setIsDeleteButtonActive] = useState(false);
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -38,6 +42,7 @@ export default function App() {
 
   const onStartEditing = () => {
     setIsCanvaVisible(!isCanvaVisible);
+    setIsAddButtonActive(!isAddButtonActive);
   };
 
   const onSaveImageAsync = async () => {
@@ -56,13 +61,14 @@ export default function App() {
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
-            <CircleButton onPress={onStartEditing} isEditing={isCanvaVisible} />
-            <IconButton
-              icon="save-alt"
-              label="Save"
-              onPress={onSaveImageAsync}
+            <FloatingMenuButton onPress={onReset} buttonIcon="refresh" />
+            <FloatingMenuButton
+              onPress={onStartEditing}
+              isActive={isAddButtonActive}
+              buttonIcon="add"
             />
+            <FloatingMenuButton onPress={() => {}} buttonIcon="delete" />
+            <FloatingMenuButton onPress={onSaveImageAsync} buttonIcon="save" />
           </View>
         </View>
       ) : (
