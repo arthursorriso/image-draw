@@ -1,52 +1,36 @@
-import { Canvas, Line, vec } from "@shopify/react-native-skia";
-import { useState } from "react";
+import { useContext } from "react";
 import { StyleSheet, View, Dimensions } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 
-import { VertexShape } from "./VertexShape";
+import { CanvaDraw } from "./CanvaDraw";
+import { PolygonContext } from "../contexts/PolygonContext";
 
 export const PolygonShapeDraw = () => {
-  const [coordinates, setCoordinates] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const { addItemToPolygon, removeItemFromPolygon, isDeleteOpen, isEditOpen } =
+    useContext(PolygonContext);
 
-  const gesture = Gesture.Tap()
+  const gestureEditDelete = Gesture.Tap()
     .runOnJS(true)
     .onEnd((e) => {
-      if (edges.length > 2){
-        edges.pop()
-      }
       const newCoordinate = { x: e.x, y: e.y };
-      setCoordinates([...coordinates, newCoordinate]);
-      const lastEdge = edges.length > 0 ? edges.slice(-1)[0].p2 : newCoordinate;
+      if (isEditOpen) {
+        addItemToPolygon(newCoordinate);
+      }
 
-      if (edges.length >= 2){
-        setEdges([...edges, { p1: lastEdge, p2: newCoordinate }, {p1: newCoordinate, p2:edges[0].p1}]);
-      } else {
-        setEdges([...edges, { p1: lastEdge, p2: newCoordinate }]);
+      if (isDeleteOpen) {
+        removeItemFromPolygon(newCoordinate);
       }
     });
 
   return (
     <View style={styles.container}>
-      <GestureDetector gesture={gesture}>
-        <Canvas style={{ flex: 1 }}>
-          {edges.map((e, index) => {
-            return (
-              <Line
-                key={index}
-                p1={vec(e.p1.x, e.p1.y)}
-                p2={vec(e.p2.x, e.p2.y)}
-                color="lightblue"
-                style="stroke"
-                strokeWidth={4}
-              />
-            );
-          })}
-          {coordinates.map((c, index) => (
-            <VertexShape key={index} x={c.x} y={c.y} />
-          ))}
-        </Canvas>
-      </GestureDetector>
+      {isEditOpen || isDeleteOpen ? (
+        <GestureDetector gesture={gestureEditDelete}>
+          <CanvaDraw />
+        </GestureDetector>
+      ) : (
+        <CanvaDraw />
+      )}
     </View>
   );
 };
