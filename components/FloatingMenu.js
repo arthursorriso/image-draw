@@ -1,12 +1,33 @@
+import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 
 import FloatingMenuButton from "./FloatingMenuButton";
+import { PolygonContext } from "../contexts/PolygonContext";
 
 export const FloatingMenu = () => {
+  const {
+    isDeleteOpen,
+    isEditOpen,
+    onDeleteHandle,
+    onEditHandle,
+    clearItemFromPolygon,
+  } = useContext(PolygonContext);
   return (
     <View style={styles.container}>
-      <FloatingMenuButton onPress={() => {}} buttonIcon="add" />
-      <FloatingMenuButton onPress={() => {}} buttonIcon="delete" />
+      <FloatingMenuButton
+        onPress={() => clearItemFromPolygon()}
+        buttonIcon="refresh"
+      />
+      <FloatingMenuButton
+        onPress={() => onEditHandle()}
+        buttonIcon="add"
+        isActive={isEditOpen}
+      />
+      <FloatingMenuButton
+        onPress={() => onDeleteHandle()}
+        buttonIcon="delete"
+        isActive={isDeleteOpen}
+      />
       <FloatingMenuButton onPress={() => {}} buttonIcon="save" />
     </View>
   );

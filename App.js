@@ -5,21 +5,16 @@ import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Button from "./components/Button";
-import CircleButton from "./components/CircleButton";
 import { FloatingMenu } from "./components/FloatingMenu";
-import FloatingMenuButton from "./components/FloatingMenuButton";
-import IconButton from "./components/IconButton";
 import ImageViewer from "./components/ImageViewer";
 import { PolygonShapeDraw } from "./components/PolygonShapeDraw";
+import { PolygonProvider } from "./contexts/PolygonContext";
 
 const PlaceholderImage = require("./assets/images/background-image.png");
 
 export default function App() {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showAppOptions, setShowAppOptions] = useState(false);
-  const [isCanvaVisible, setIsCanvaVisible] = useState(false);
-  const [isAddButtonActive, setIsAddButtonActive] = useState(false);
-  const [isDeleteButtonActive, setIsDeleteButtonActive] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const pickImageAsync = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -29,62 +24,45 @@ export default function App() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      setShowAppOptions(true);
+      setIsEditing(true);
     } else {
       alert("You did not select any image.");
     }
   };
 
-  const onReset = () => {
-    setShowAppOptions(false);
-    setIsCanvaVisible(false);
-  };
-
-  const onStartEditing = () => {
-    setIsCanvaVisible(!isCanvaVisible);
-    setIsAddButtonActive(!isAddButtonActive);
-  };
-
-  const onSaveImageAsync = async () => {
-    // we will implement this later
-  };
-
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <ImageViewer
-          placeholderImageSource={PlaceholderImage}
-          selectedImage={selectedImage}
-        />
-        {isCanvaVisible && <PolygonShapeDraw />}
-      </View>
-      {showAppOptions ? (
-        <View style={styles.optionsContainer}>
-          <View style={styles.optionsRow}>
-            <FloatingMenuButton onPress={onReset} buttonIcon="refresh" />
-            <FloatingMenuButton
-              onPress={onStartEditing}
-              isActive={isAddButtonActive}
-              buttonIcon="add"
-            />
-            <FloatingMenuButton onPress={() => {}} buttonIcon="delete" />
-            <FloatingMenuButton onPress={onSaveImageAsync} buttonIcon="save" />
+      <PolygonProvider>
+        <View style={styles.imageContainer}>
+          <ImageViewer
+            placeholderImageSource={PlaceholderImage}
+            selectedImage={selectedImage}
+          />
+          {isEditing && <PolygonShapeDraw />}
+        </View>
+        {isEditing ? (
+          <View style={styles.optionsContainer}>
+            <View style={styles.optionsRow}>
+              <FloatingMenu />
+            </View>
           </View>
-        </View>
-      ) : (
-        <View style={styles.footerContainer}>
-          <Button
-            theme="primary"
-            label="Choose a photo"
-            onPress={pickImageAsync}
-          />
-          <Button
-            label="Use this photo"
-            onPress={() => setShowAppOptions(true)}
-          />
-        </View>
-      )}
-      <StatusBar style="auto" />
+        ) : (
+          <View style={styles.footerContainer}>
+            <Button
+              theme="primary"
+              label="Choose a photo"
+              onPress={pickImageAsync}
+            />
+            <Button
+              label="Use this photo"
+              onPress={() => {
+                setIsEditing(true);
+              }}
+            />
+          </View>
+        )}
+        <StatusBar style="auto" />
+      </PolygonProvider>
     </GestureHandlerRootView>
   );
 }
@@ -105,6 +83,7 @@ const styles = StyleSheet.create({
   optionsContainer: {
     position: "absolute",
     bottom: 80,
+    left: "30%",
   },
   optionsRow: {
     alignItems: "center",
