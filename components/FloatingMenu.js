@@ -8,8 +8,10 @@ export const FloatingMenu = () => {
   const {
     isDeleteOpen,
     isEditOpen,
+    isEditVertexOpen,
     onDeleteHandle,
     onEditHandle,
+    onEditVertexHandle,
     clearItemFromPolygon,
   } = useContext(PolygonContext);
   return (
@@ -27,6 +29,11 @@ export const FloatingMenu = () => {
         onPress={() => onDeleteHandle()}
         buttonIcon="delete"
         isActive={isDeleteOpen}
+      />
+       <FloatingMenuButton
+        onPress={() => onEditVertexHandle()}
+        buttonIcon="edit"
+        isActive={isEditVertexOpen}
       />
       <FloatingMenuButton onPress={() => {}} buttonIcon="save" />
     </View>

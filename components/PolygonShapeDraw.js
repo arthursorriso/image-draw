@@ -6,7 +6,7 @@ import { CanvaDraw } from "./CanvaDraw";
 import { PolygonContext } from "../contexts/PolygonContext";
 
 export const PolygonShapeDraw = () => {
-  const { addItemToPolygon, removeItemFromPolygon, isDeleteOpen, isEditOpen } =
+  const { addItemToPolygon, removeItemFromPolygon, selectItemFromPolygon, setInitilDrag, editItemFromPolygon, isDeleteOpen, isEditOpen, isEditVertexOpen, isSelectEdit } =
     useContext(PolygonContext);
 
   const gestureEditDelete = Gesture.Tap()
@@ -20,12 +20,26 @@ export const PolygonShapeDraw = () => {
       if (isDeleteOpen) {
         removeItemFromPolygon(newCoordinate);
       }
+
+      if (isEditVertexOpen) {
+        selectItemFromPolygon(newCoordinate)
+      }
     });
+  
+  const gestureDrag = Gesture.Pan().runOnJS(true)
+    .onStart((e) => {
+      const coordinate = {x: e.x, y: e.y}
+      setInitilDrag(coordinate)
+    })
+    .onUpdate((e) => {
+      const coordinate = {x: e.x, y: e.y}
+      editItemFromPolygon(coordinate)
+    })
 
   return (
     <View style={styles.container}>
-      {isEditOpen || isDeleteOpen ? (
-        <GestureDetector gesture={gestureEditDelete}>
+      {isEditOpen || isDeleteOpen || isEditVertexOpen ? (
+        <GestureDetector gesture={isSelectEdit? gestureDrag :gestureEditDelete}>
           <CanvaDraw />
         </GestureDetector>
       ) : (
