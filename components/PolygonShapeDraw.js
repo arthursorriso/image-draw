@@ -35,11 +35,13 @@ export const PolygonShapeDraw = () => {
       const coordinate = {x: e.x, y: e.y}
       editItemFromPolygon(coordinate)
     })
+  
+    const gestureDragAndTap = Gesture.Race(gestureEditDelete, gestureDrag)
 
   return (
     <View style={styles.container}>
       {isEditOpen || isDeleteOpen || isEditVertexOpen ? (
-        <GestureDetector gesture={isSelectEdit? gestureDrag :gestureEditDelete}>
+        <GestureDetector gesture={isSelectEdit? gestureDragAndTap :gestureEditDelete}>
           <CanvaDraw />
         </GestureDetector>
       ) : (
