@@ -1,12 +1,13 @@
 import { useContext } from "react";
-import { StyleSheet, View, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions, Modal, TouchableOpacity, Text } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 
 import { CanvaDraw } from "./CanvaDraw";
 import { PolygonContext } from "../contexts/PolygonContext";
+import { calculateAreaPolygon } from "../utils/calculateaArea";
 
 export const PolygonShapeDraw = () => {
-  const { addItemToPolygon, removeItemFromPolygon, selectItemFromPolygon, setInitilDrag, editItemFromPolygon, isDeleteOpen, isEditOpen, isEditVertexOpen, isSelectEdit } =
+  const { addItemToPolygon, removeItemFromPolygon, selectItemFromPolygon, setInitilDrag, editItemFromPolygon, onVisibleModal, isDeleteOpen, isEditOpen, isEditVertexOpen, isSelectEdit, isModalVisible, coordinates } =
     useContext(PolygonContext);
 
   const gestureEditDelete = Gesture.Tap()
@@ -47,6 +48,20 @@ export const PolygonShapeDraw = () => {
       ) : (
         <CanvaDraw />
       )}
+      {isModalVisible && <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={{justifyContent: 'center', alignItems:'center', flex:1}}>
+          <View style={{backgroundColor:'white', width: 300, borderRadius: 8, padding:16, gap: 16}}>
+            <Text style={{fontSize: 24}}>A área em pixels: {calculateAreaPolygon(coordinates)}</Text>
+            <TouchableOpacity onPress={onVisibleModal} style={{backgroundColor: '#d00000', borderRadius: 4, paddingVertical:8, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: 'white', fontSize:16}}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View> 
+      </Modal>}
     </View>
   );
 };

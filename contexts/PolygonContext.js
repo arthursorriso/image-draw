@@ -7,6 +7,7 @@ export const PolygonContext = createContext({
   isDeleteOpen: false,
   isEditVertexOpen: false,
   isSelectEdit: false,
+  isModalVisible: false,
   setIsEditOpen: () => {},
   setIsDeleteOpen: () => {},
   onEditVertexHandle: () => {},
@@ -20,6 +21,7 @@ export const PolygonContext = createContext({
   setInitilDrag: () => {},
   onEditHandle: () => {},
   onDeleteHandle: () => {},
+  onVisibleModal: () => {}
 });
 
 const POLYGON_ACTION_TYPES = {
@@ -173,6 +175,7 @@ export const PolygonProvider = ({ children }) => {
   const [isSelectEdit, setIsSelectEdit] = useState(false)
   const [initalDrag, setInitilDrag] = useState({})
   const [currentEdit, setCurrentEdit] = useState({})
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const [{ coordinates, edges }, dispatch] = useReducer(
     polygonReducer,
@@ -263,12 +266,17 @@ export const PolygonProvider = ({ children }) => {
     }
   } 
 
+  const onVisibleModal = () => {
+    setIsModalVisible(!isModalVisible)
+  }
+
   const value = {
     isEditOpen,
     setIsEditOpen,
     isDeleteOpen,
     isEditVertexOpen,
     isSelectEdit,
+    isModalVisible,
     setIsDeleteOpen,
     addItemToPolygon,
     removeItemFromPolygon,
@@ -279,6 +287,7 @@ export const PolygonProvider = ({ children }) => {
     onDeleteHandle,
     onEditHandle,
     onEditVertexHandle,
+    onVisibleModal,
     coordinates,
     edges,
   };
